@@ -1,4 +1,4 @@
-package com.example.fitnesstrackingapp;
+package com.example.fitnesstrackingapp.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
