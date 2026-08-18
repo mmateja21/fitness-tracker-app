@@ -7,6 +7,7 @@ import com.example.fitnesstrackingapp.util.DatabaseManager;
 import com.example.fitnesstrackingapp.service.ExerciseService;
 import com.example.fitnesstrackingapp.exception.ValidationException;
 import com.example.fitnesstrackingapp.model.Exercise;
+import com.example.fitnesstrackingapp.exception.EntityNotFoundException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -134,12 +135,19 @@ public class FitnessServer {
                 case CREATE_EXERCISE ->
                         handleCreateExercise(request);
 
+                case UPDATE_EXERCISE ->
+                        handleUpdateExercise(request);
+
+                case DELETE_EXERCISE ->
+                        handleDeleteExercise(request);
+
                 default -> Response.failure(
                         "Zahtev još nije implementiran: " + type
                 );
             };
 
-        } catch (ValidationException exception){
+        } catch (ValidationException | EntityNotFoundException exception
+        ){
             return Response.failure(exception.getMessage());
         }
         catch (SQLException exception) {
@@ -171,4 +179,28 @@ public class FitnessServer {
                     savedExercise);
         }
 
+        private static Response<?> handleUpdateExercise(
+                Request<?> request
+        )throws ValidationException, EntityNotFoundException, SQLException{
+        if(!(request.getData() instanceof  Exercise exercise)){
+            return Response.failure(
+                    "Zahtev ne sadrzi ispravne podatke o vezbi."
+            );
+        }
+        Exercise updatedExercise = EXERCISE_SERVICE.updateExercise(exercise);
+        return Response.success("" +
+                "Vezba je uspesno izmenjena.", updatedExercise);
+        }
+        private static Response<?> handleDeleteExercise(
+                Request<?> request)
+                throws  ValidationException, EntityNotFoundException, SQLException {
+
+            if (!(request.getData() instanceof Integer exerciseID)) {
+                return Response.failure("Zahtev ne sadrzi ispravan ID");
+            }
+            EXERCISE_SERVICE.deleteExercise(exerciseID);
+            return Response.success(
+                    "Vezba je uspesno obirsana.");
+
+        }
 }
