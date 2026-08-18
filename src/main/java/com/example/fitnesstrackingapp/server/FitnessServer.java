@@ -1,11 +1,16 @@
 package com.example.fitnesstrackingapp.server;
 
+import com.example.fitnesstrackingapp.network.Request;
+import com.example.fitnesstrackingapp.network.RequestType;
+import com.example.fitnesstrackingapp.network.Response;
 import com.example.fitnesstrackingapp.util.DatabaseManager;
+import com.example.fitnesstrackingapp.service.ExerciseService;
+import com.example.fitnesstrackingapp.exception.ValidationException;
+import com.example.fitnesstrackingapp.model.Exercise;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
@@ -14,11 +19,16 @@ import java.sql.SQLException;
 
 public class FitnessServer {
 
-    // Mrezni port na kojem server prihvata klijente.
+    // Mrežni port na kojem server prihvata klijente.
     private static final int PORT = 5555;
+    private static final ExerciseService EXERCISE_SERVICE =
+            new ExerciseService();
 
-    // Pokrece bazu i mrezni server.
-
+    /**
+     * Pokreće bazu i mrezni server.
+     *
+     * @param args argumenti komandne linije
+     */
     public static void main(String[] args) {
         try {
             DatabaseManager.initializeDatabase();
@@ -33,7 +43,7 @@ public class FitnessServer {
     }
 
     /**
-     * Pokrece server i ceka klijentske konekcije.
+     * Pokreće server i ceka klijentske konekcije.
      *
      * @throws IOException ako mrezna komunikacija ne uspe
      */
@@ -51,10 +61,11 @@ public class FitnessServer {
         }
     }
 
-
-     // Prima jednu poruku od klijenta i vraća odgovor.
-
-
+    /**
+     * Prima jedan zahtev i vraca jedan odgovor.
+     *
+     * @param clientSocket konekcija sa klijentom
+     */
     private static void handleClient(Socket clientSocket) {
         System.out.println(
                 "Klijent je povezan: "
@@ -63,27 +74,101 @@ public class FitnessServer {
 
         try (
                 Socket socket = clientSocket;
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream())
-                );
-                PrintWriter writer = new PrintWriter(
-                        socket.getOutputStream(),
-                        true
-                )
+                ObjectOutputStream output =
+                        new ObjectOutputStream(
+                                socket.getOutputStream()
+                        );
+                ObjectInputStream input =
+                        new ObjectInputStream(
+                                socket.getInputStream()
+                        )
         ) {
-            String message = reader.readLine();
-            System.out.println(
-                    "Primljena poruka: " + message
-            );
+            output.flush();
 
-            writer.println(
-                    "Server je primio poruku: " + message
-            );
-        } catch (IOException exception) {
+            Object receivedObject = input.readObject();
+
+            Response<?> response;
+
+            if (receivedObject instanceof Request<?> request) {
+                System.out.println(
+                        "Primljen zahtev: " + request.getType()
+                );
+
+                response = handleRequest(request);
+            } else {
+                response = Response.failure(
+                        "Server nije primio ispravan zahtev."
+                );
+            }
+
+            output.writeObject(response);
+            output.flush();
+
+        } catch (IOException | ClassNotFoundException exception) {
             System.err.println(
                     "Greska u komunikaciji sa klijentom: "
                             + exception.getMessage()
             );
         }
     }
+
+    /**
+     * Obradjuje zahtev prema njegovom tipu.
+     *
+     * @param request zahtev klijenta
+     * @return odgovor servera
+     */
+    private static Response<?> handleRequest(Request<?> request) {
+        RequestType type = request.getType();
+
+        try {
+            return switch (type) {
+                case PING -> Response.success(
+                        "PONG - server radi."
+                );
+
+                case GET_ALL_EXERCISES -> Response.success(
+                        "Vežbe su uspešno učitane.",
+                        EXERCISE_SERVICE.getAllExercises()
+                );
+                case CREATE_EXERCISE ->
+                        handleCreateExercise(request);
+
+                default -> Response.failure(
+                        "Zahtev još nije implementiran: " + type
+                );
+            };
+
+        } catch (ValidationException exception){
+            return Response.failure(exception.getMessage());
+        }
+        catch (SQLException exception) {
+            System.err.println(
+                    "Greška pri radu sa bazom: "
+                            + exception.getMessage()
+            );
+            exception.printStackTrace();
+
+            return Response.failure(
+                    "Server nije uspeo da pristupi bazi."
+            );
+        }
+    }
+
+
+        private static Response<?> handleCreateExercise(
+                Request<?> request
+                ) throws ValidationException, SQLException{
+            if(!(request.getData() instanceof Exercise exercise)){
+                return Response.failure(
+                        "Zahtev ne sadrzi ispravne podatke o vezbi."
+                );
+            }
+            Exercise savedExercise =
+                    EXERCISE_SERVICE.createExercise(exercise);
+            return Response.success("" +
+                    "Vezba je uspesno dodata.",
+                    savedExercise);
+        }
+
 }

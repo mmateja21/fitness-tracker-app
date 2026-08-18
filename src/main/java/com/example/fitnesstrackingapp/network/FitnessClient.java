@@ -1,37 +1,106 @@
 package com.example.fitnesstrackingapp.network;
+import com.example.fitnesstrackingapp.model.MuscleGroup;
+import com.example.fitnesstrackingapp.model.Exercise;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+//slanje zahteva serveru
 public class FitnessClient {
+
 
     private static final String SERVER_HOST = "localhost";
 
+
     private static final int SERVER_PORT = 5555;
 
-    static void main() {
-        try(
+
+      //Salje zahtev serveru i vraca primljeni odgovor
+
+
+    public Response<?> sendRequest(Request<?> request)
+            throws IOException, ClassNotFoundException {
+
+        try (
                 Socket socket =
                         new Socket(SERVER_HOST, SERVER_PORT);
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream())
-                );
-                PrintWriter writer = new PrintWriter(
-                        socket.getOutputStream(),
-                        true
-                )
-                ){
-            System.out.println("Klijent je povezan sa serverom. ");
-            writer.println("PING");
+                ObjectOutputStream output =
+                        new ObjectOutputStream(
+                                socket.getOutputStream()
+                        );
+                ObjectInputStream input =
+                        new ObjectInputStream(
+                                socket.getInputStream()
+                        )
+        ) {
+            output.flush();
+            output.writeObject(request);
+            output.flush();
 
-            String response = reader.readLine();
-            System.out.println("Odgovor servera: "+ response);
-        }catch (IOException exception){
-            System.err.println("Povezivanje nije uspelo: "+
-                    exception.getMessage());
+            Object receivedObject = input.readObject();
+
+            if (receivedObject instanceof Response<?> response) {
+                return response;
+            }
+
+            throw new IOException(
+                    "Server nije vratio ispravan odgovor."
+            );
         }
     }
-}
+
+
+
+
+    //Šalje probnu vežbu serveru.
+
+    public static void main(String[] args) {
+        FitnessClient client = new FitnessClient();
+
+        Exercise exercise = new Exercise(
+                "Bench Press",
+                MuscleGroup.CHEST,
+                "Sipka i ravna klupa",
+                "Potisak sipke sa ravne klupe."
+        );
+
+        Request<Exercise> request = new Request<>(
+                RequestType.CREATE_EXERCISE,
+                exercise
+        );
+
+        try {
+            Response<?> response =
+                    client.sendRequest(request);
+
+            System.out.println(
+                    "Uspesan odgovor: "
+                            + response.isSuccessful()
+            );
+
+            System.out.println(
+                    "Poruka servera: "
+                            + response.getMessage()
+            );
+
+            if (response.getData() instanceof Exercise savedExercise) {
+                System.out.println(
+                        "Dodeljeni ID: "
+                                + savedExercise.getId()
+                );
+
+                System.out.println(
+                        "Sacuvana vezba: "
+                                + savedExercise.getName()
+                );
+            }
+
+        } catch (IOException | ClassNotFoundException exception) {
+            System.err.println(
+                    "Komunikacija sa serverom nije uspela: "
+                            + exception.getMessage()
+            );
+        }
+    }}
