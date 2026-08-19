@@ -214,6 +214,101 @@ public class WorkoutSessionRepository
     }
 
     /**
+     * Vraća broj održanih treninga korisnika.
+     */
+    public int countByUserId(int userId)
+            throws SQLException {
+
+        String sql = """
+            SELECT COUNT(*) AS total
+            FROM workout_sessions
+            WHERE user_id = ?
+            """;
+
+        try (Connection connection =
+                     DatabaseManager.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                return resultSet.next()
+                        ? resultSet.getInt("total")
+                        : 0;
+            }
+        }
+    }
+
+    /**
+     * Vraća ukupno trajanje svih treninga korisnika.
+     */
+    public int sumDurationByUserId(int userId)
+            throws SQLException {
+
+        String sql = """
+            SELECT COALESCE(
+                       SUM(duration_minutes),
+                       0
+                   ) AS total_duration
+            FROM workout_sessions
+            WHERE user_id = ?
+            """;
+
+        try (Connection connection =
+                     DatabaseManager.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                return resultSet.next()
+                        ? resultSet.getInt("total_duration")
+                        : 0;
+            }
+        }
+    }
+
+    /**
+     * Vraća prosečno trajanje treninga korisnika.
+     */
+    public double averageDurationByUserId(int userId)
+            throws SQLException {
+
+        String sql = """
+            SELECT COALESCE(
+                       AVG(duration_minutes),
+                       0
+                   ) AS average_duration
+            FROM workout_sessions
+            WHERE user_id = ?
+            """;
+
+        try (Connection connection =
+                     DatabaseManager.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
+
+                return resultSet.next()
+                        ? resultSet.getDouble(
+                        "average_duration"
+                )
+                        : 0;
+            }
+        }
+    }
+
+    /**
      * Postavlja parametre za INSERT i UPDATE naredbe.
      */
     private void setSessionParameters(

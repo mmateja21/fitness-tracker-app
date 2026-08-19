@@ -70,6 +70,19 @@
 
     <bottom>
         <VBox spacing="10.0">
+            <HBox spacing="30.0">
+                <Label fx:id="totalWorkoutsLabel"
+                       text="Broj treninga: 0"
+                       style="-fx-text-fill: #0b2e59; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+
+                <Label fx:id="totalDurationLabel"
+                       text="Ukupno trajanje: 0 min"
+                       style="-fx-text-fill: #0b2e59; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+
+                <Label fx:id="averageDurationLabel"
+                       text="Prosečno trajanje: 0.0 min"
+                       style="-fx-text-fill: #0b2e59; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+            </HBox>
 
             <HBox spacing="10.0">
                 <Button text="Osveži"

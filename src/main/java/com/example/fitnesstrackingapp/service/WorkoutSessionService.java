@@ -4,7 +4,7 @@ import com.example.fitnesstrackingapp.exception.EntityNotFoundException;
 import com.example.fitnesstrackingapp.exception.ValidationException;
 import com.example.fitnesstrackingapp.model.WorkoutSession;
 import com.example.fitnesstrackingapp.repository.WorkoutSessionRepository;
-
+import com.example.fitnesstrackingapp.model.WorkoutSummary;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -115,6 +115,35 @@ public class WorkoutSessionService {
                             + " nije pronađen."
             );
         }
+    }
+
+    /**
+     * Vraća zbirne podatke o treninzima
+     * podrazumevanog korisnika.
+     */
+    public WorkoutSummary getSummaryForDefaultUser()
+            throws SQLException {
+
+        int totalWorkouts =
+                sessionRepository.countByUserId(
+                        DEFAULT_USER_ID
+                );
+
+        int totalDuration =
+                sessionRepository.sumDurationByUserId(
+                        DEFAULT_USER_ID
+                );
+
+        double averageDuration =
+                sessionRepository.averageDurationByUserId(
+                        DEFAULT_USER_ID
+                );
+
+        return new WorkoutSummary(
+                totalWorkouts,
+                totalDuration,
+                averageDuration
+        );
     }
 
     /**

@@ -197,6 +197,11 @@ public class FitnessServer {
                         "Istorija treninga je uspesno ucitana. ",
                         SESSION_SERVICE.getSessionsForDefaultUser());
 
+                case GET_WORKOUT_SUMMARY -> Response.success(
+                        "Pregled treninga je uspešno izračunat.",
+                        SESSION_SERVICE.getSummaryForDefaultUser()
+                );
+
 
 
                 default -> Response.failure(

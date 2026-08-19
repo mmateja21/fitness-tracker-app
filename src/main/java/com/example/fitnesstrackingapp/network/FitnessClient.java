@@ -264,6 +264,19 @@ public class FitnessClient {
         );
     }
 
+    /**
+     * Zahteva zbirne podatke o treninzima.
+     */
+    public Response<?> getWorkoutSummary()
+            throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.GET_WORKOUT_SUMMARY
+                )
+        );
+    }
+
 
 
     //Šalje zahtev serveru i vraća primljeni odgovor.

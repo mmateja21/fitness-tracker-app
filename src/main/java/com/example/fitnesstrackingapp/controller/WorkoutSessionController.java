@@ -15,7 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import com.example.fitnesstrackingapp.FitnessApplication;
-
+import com.example.fitnesstrackingapp.model.WorkoutSummary;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -55,6 +55,14 @@ public class WorkoutSessionController {
 
     @FXML
     private Label statusLabel;
+    @FXML
+    private Label totalWorkoutsLabel;
+
+    @FXML
+    private Label totalDurationLabel;
+
+    @FXML
+    private Label averageDurationLabel;
 
     private final FitnessClient fitnessClient =
             new FitnessClient();
@@ -68,6 +76,9 @@ public class WorkoutSessionController {
     @FXML
     private void initialize() {
         configureTableColumns();
+        sessionTable.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
+        );
         sessionTable.setItems(sessions);
         loadSessions();
     }
@@ -145,10 +156,52 @@ public class WorkoutSessionController {
             showSuccess(
                     "Učitano treninga: " + sessions.size()
             );
+            loadSummary();
 
         } catch (IOException | ClassNotFoundException exception) {
             showError(
                     "Server nije dostupan. Pokrenite FitnessServer."
+            );
+        }
+    }
+    /**
+     * Učitava zbirne podatke o treninzima sa servera.
+     */
+    private void loadSummary() {
+        try {
+            Response<?> response =
+                    fitnessClient.getWorkoutSummary();
+
+            if (!response.isSuccessful()) {
+                showError(response.getMessage());
+                return;
+            }
+
+            if (response.getData()
+                    instanceof WorkoutSummary summary) {
+
+                totalWorkoutsLabel.setText(
+                        "Broj treninga: "
+                                + summary.getTotalWorkouts()
+                );
+
+                totalDurationLabel.setText(
+                        "Ukupno trajanje: "
+                                + summary.getTotalDurationMinutes()
+                                + " min"
+                );
+
+                averageDurationLabel.setText(
+                        String.format(
+                                "Prosečno trajanje: %.1f min",
+                                summary.getAverageDurationMinutes()
+                        )
+                );
+            }
+
+        } catch (IOException | ClassNotFoundException exception) {
+            showError(
+                    "Pregled treninga nije moguće učitati."
             );
         }
     }
@@ -258,6 +311,8 @@ public class WorkoutSessionController {
             }
 
             sessions.remove(selectedSession);
+            loadSummary();
+
 
             showSuccess(
                     "Trening je uspešno obrisan."
