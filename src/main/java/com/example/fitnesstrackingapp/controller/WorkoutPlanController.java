@@ -16,6 +16,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import com.example.fitnesstrackingapp.FitnessApplication;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -322,6 +329,61 @@ public class WorkoutPlanController {
             showError(
                     "Brisanje nije uspelo jer server nije dostupan."
             );
+        }
+    }
+
+    /**
+     * Otvara prozor za uređivanje vežbi izabranog plana.
+     */
+    @FXML
+    private void handleManageExercises() {
+        WorkoutPlan selectedPlan =
+                planTable.getSelectionModel()
+                        .getSelectedItem();
+
+        if (selectedPlan == null) {
+            showError(
+                    "Prvo izaberite plan iz tabele."
+            );
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    FitnessApplication.class.getResource(
+                            "plan-details-view.fxml"
+                    )
+            );
+
+            Parent root = loader.load();
+
+            PlanDetailsController controller =
+                    loader.getController();
+
+            controller.setPlan(selectedPlan);
+
+            Stage stage = new Stage();
+            stage.setTitle(
+                    "Vežbe plana - " + selectedPlan.getName()
+            );
+            stage.initModality(
+                    Modality.APPLICATION_MODAL
+            );
+            stage.initOwner(
+                    planTable.getScene().getWindow()
+            );
+            stage.setScene(
+                    new Scene(root, 950, 600)
+            );
+            stage.setMinWidth(850);
+            stage.setMinHeight(550);
+            stage.showAndWait();
+
+        } catch (IOException exception) {
+            showError(
+                    "Prozor za uređivanje plana nije moguće otvoriti."
+            );
+            exception.printStackTrace();
         }
     }
 

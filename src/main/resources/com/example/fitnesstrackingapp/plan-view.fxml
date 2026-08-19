@@ -121,6 +121,10 @@
                         styleClass="secondary-button"
                         onAction="#handleClear"/>
             </HBox>
+            <Button maxWidth="Infinity"
+                    text="Uredi vežbe u planu"
+                    styleClass="primary-button"
+                    onAction="#handleManageExercises"/>
         </VBox>
     </right>
 

@@ -2,6 +2,8 @@ package com.example.fitnesstrackingapp.network;
 
 import com.example.fitnesstrackingapp.model.Exercise;
 import com.example.fitnesstrackingapp.model.WorkoutPlan;
+import com.example.fitnesstrackingapp.model.PlanExercise;
+import com.example.fitnesstrackingapp.service.PlanExerciseService;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -129,6 +131,44 @@ public class FitnessClient {
                         planId
                 )
         );
+    }
+
+    public Response<?> getPlanExercises(int planId)
+        throws IOException, ClassNotFoundException{
+        return sendRequest(
+                new Request<>(RequestType.GET_PLAN_EXERCISES,
+                        planId)
+        );
+    }
+
+    public Response<?> addExerciseToPlan (PlanExercise item)
+        throws IOException, ClassNotFoundException{
+        return sendRequest(
+                new Request<>(
+                        RequestType.ADD_EXERCISE_TO_PLAN,
+                        item
+                )
+        );
+    }
+
+    public Response<?> updatePlanExercise (PlanExercise item)
+        throws IOException,ClassNotFoundException{
+        return sendRequest(
+                new Request<>(
+                        RequestType.UPDATE_PLAN_EXERCISE,
+                        item
+                )
+        );
+    }
+
+
+    public Response<?> removeExerciseFromPlan(int itemId)
+        throws IOException,ClassNotFoundException{
+
+        return sendRequest(new Request<>(
+                RequestType.REMOVE_EXERCISE_FROM_PLAN,
+                itemId
+        ));
     }
 
     //Šalje zahtev serveru i vraća primljeni odgovor.

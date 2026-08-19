@@ -167,3 +167,7 @@
 .content-pane {
     -fx-background-color: #f4f7fb;
 }
+.form-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
