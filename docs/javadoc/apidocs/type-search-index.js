@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html","k":"18"},{"p":"com.example.fitnesstrackingapp","l":"FitnessApplication"},{"p":"com.example.fitnesstrackingapp","l":"Launcher"}];updateSearchResults();
