@@ -1,6 +1,7 @@
 package com.example.fitnesstrackingapp.network;
 
 import com.example.fitnesstrackingapp.model.Exercise;
+import com.example.fitnesstrackingapp.model.WorkoutPlan;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -85,6 +86,47 @@ public class FitnessClient {
                 new Request<>(
                         RequestType.DELETE_EXERCISE,
                         exerciseId
+                )
+        );
+    }
+
+    public Response<?>getAllPlans()
+        throws IOException, ClassNotFoundException{
+        return sendRequest(
+                new Request<>(
+                        RequestType.GET_ALL_PLANS
+                )
+        );
+    }
+
+    public Response<?> createPlan(WorkoutPlan plan)
+        throws IOException, ClassNotFoundException{
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.CREATE_PLAN,
+                        plan
+                )
+        );
+    }
+
+    public Response<?>updatePlan(WorkoutPlan plan)
+        throws IOException, ClassNotFoundException{
+        return sendRequest(
+                new Request<>(
+                        RequestType.UPDATE_PLAN,
+                        plan
+                )
+        );
+    }
+
+    public Response<?> deletePlan (int planId)
+        throws IOException, ClassNotFoundException{
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.DELETE_PLAN,
+                        planId
                 )
         );
     }

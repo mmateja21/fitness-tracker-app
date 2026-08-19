@@ -126,3 +126,44 @@
 .danger-button:hover {
     -fx-background-color: #650808;
 }
+.sidebar {
+    -fx-background-color: #172554;
+}
+
+.app-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.app-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #bfdbfe;
+}
+
+.sidebar .separator .line {
+    -fx-border-color: #334a7d;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #dbeafe;
+    -fx-alignment: center-left;
+    -fx-padding: 12px 14px;
+}
+
+.nav-button:hover {
+    -fx-background-color: #1e3a8a;
+}
+
+.nav-button:pressed {
+    -fx-background-color: #2563eb;
+}
+
+.nav-button:disabled {
+    -fx-opacity: 0.45;
+}
+
+.content-pane {
+    -fx-background-color: #f4f7fb;
+}

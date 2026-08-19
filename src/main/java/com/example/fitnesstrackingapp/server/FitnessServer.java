@@ -1,5 +1,6 @@
 package com.example.fitnesstrackingapp.server;
 
+
 import com.example.fitnesstrackingapp.network.Request;
 import com.example.fitnesstrackingapp.network.RequestType;
 import com.example.fitnesstrackingapp.network.Response;
@@ -8,6 +9,8 @@ import com.example.fitnesstrackingapp.service.ExerciseService;
 import com.example.fitnesstrackingapp.exception.ValidationException;
 import com.example.fitnesstrackingapp.model.Exercise;
 import com.example.fitnesstrackingapp.exception.EntityNotFoundException;
+import com.example.fitnesstrackingapp.model.WorkoutPlan;
+import com.example.fitnesstrackingapp.service.WorkoutPlanService;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,6 +27,8 @@ public class FitnessServer {
     private static final int PORT = 5555;
     private static final ExerciseService EXERCISE_SERVICE =
             new ExerciseService();
+    private static final WorkoutPlanService PLAN_SERVICE =
+            new WorkoutPlanService();
 
     /**
      * Pokreće bazu i mrezni server.
@@ -141,6 +146,17 @@ public class FitnessServer {
                 case DELETE_EXERCISE ->
                         handleDeleteExercise(request);
 
+                case GET_ALL_PLANS -> Response.success(
+                        "Planovi su uspesno ucitani",
+                        PLAN_SERVICE.getPlansForDefaultUser()
+                );
+
+                case CREATE_PLAN -> handleCreatePlan(request);
+
+                case UPDATE_PLAN -> handleUpdatePlan(request);
+
+                case DELETE_PLAN -> handleDeletePlan(request);
+
                 default -> Response.failure(
                         "Zahtev još nije implementiran: " + type
                 );
@@ -203,4 +219,51 @@ public class FitnessServer {
                     "Vezba je uspesno obirsana.");
 
         }
+
+        private static Response<?> handleCreatePlan(
+                Request<?> request
+        ) throws ValidationException, SQLException{
+        if(!(request.getData()instanceof WorkoutPlan plan)){
+            return Response.failure(
+                    "Zahtev ne sadrzi ispravne podatke o planu."
+            );
+        }WorkoutPlan savedPlan = PLAN_SERVICE.createPlan(plan);
+
+        return Response.success(
+                "Plan je uspesno dodat",
+                savedPlan
+        );
+        }
+
+    private static Response<?> handleUpdatePlan(
+            Request<?> request
+    ) throws ValidationException, SQLException, EntityNotFoundException{
+        if(!(request.getData()instanceof WorkoutPlan plan)){
+            return Response.failure(
+                    "Zahtev ne sadrzi ispravne podatke o planu."
+            );
+        }WorkoutPlan updatedPlan = PLAN_SERVICE.updatePlan(plan);
+
+        return Response.success(
+                "Plan je uspesno izmenjen",
+                updatedPlan
+        );
+    }
+
+    private static Response<?> handleDeletePlan(
+            Request<?> request
+    ) throws ValidationException, SQLException, EntityNotFoundException{
+        if(!(request.getData()instanceof Integer planId)){
+            return Response.failure(
+                    "Zahtev ne sadrzi ispravan ID plana."
+            );
+        } PLAN_SERVICE.deletePlan(planId);
+
+        return Response.success(
+                "Plan je uspesno obrisan"
+
+        );
+    }
+
+
 }

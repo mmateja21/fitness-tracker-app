@@ -74,3 +74,13 @@ CREATE INDEX IF NOT EXISTS idx_plan_exercises_plan_id
 
 CREATE INDEX IF NOT EXISTS idx_session_exercises_session_id
     ON session_exercises(session_id);
+
+INSERT OR IGNORE INTO users (
+    id,
+    full_name,
+    email
+) VALUES (
+             1,
+             'Lokalni korisnik',
+             'user@fitness.local'
+         );
