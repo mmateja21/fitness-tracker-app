@@ -13,6 +13,10 @@ import com.example.fitnesstrackingapp.model.WorkoutPlan;
 import com.example.fitnesstrackingapp.service.WorkoutPlanService;
 import com.example.fitnesstrackingapp.model.PlanExercise;
 import com.example.fitnesstrackingapp.service.PlanExerciseService;
+import com.example.fitnesstrackingapp.model.SessionExercise;
+import com.example.fitnesstrackingapp.model.WorkoutSession;
+import com.example.fitnesstrackingapp.service.SessionExerciseService;
+import com.example.fitnesstrackingapp.service.WorkoutSessionService;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,6 +37,11 @@ public class FitnessServer {
             new WorkoutPlanService();
     private static final PlanExerciseService PLAN_EXERCISE_SERVICE =
             new PlanExerciseService();
+    private static final WorkoutSessionService SESSION_SERVICE =
+            new WorkoutSessionService();
+
+    private static final SessionExerciseService SESSION_EXERCISE_SERVICE =
+            new SessionExerciseService();
 
 
     /**
@@ -169,6 +178,24 @@ public class FitnessServer {
                 case UPDATE_PLAN_EXERCISE -> handleUpdatePlanExercise(request);
 
                 case REMOVE_EXERCISE_FROM_PLAN -> handleRemoveExerciseFromPlan(request);
+
+                case CREATE_SESSION -> handleCreateSession(request);
+
+                case UPDATE_SESSION -> handleUpdateSession(request);
+
+                case DELETE_SESSION -> handleDeleteSession(request);
+
+                case GET_SESSION_EXERCISES -> handleGetSessionExercises(request);
+
+                case ADD_SESSION_EXERCISE -> handleAddSessionExercise(request);
+
+                case UPDATE_SESSION_EXERCISE -> handleUpdateSessionExercise(request);
+
+                case REMOVE_SESSION_EXERCISE -> handleRemoveSessionExercise(request);
+
+                case GET_ALL_SESSIONS -> Response.success("" +
+                        "Istorija treninga je uspesno ucitana. ",
+                        SESSION_SERVICE.getSessionsForDefaultUser());
 
 
 
@@ -336,6 +363,148 @@ public class FitnessServer {
         return Response.success(
                 "Vezba je uspesno uklonjena iz plana "
 
+        );
+    }
+    private static Response<?> handleCreateSession(
+            Request<?> request
+    ) throws ValidationException, SQLException {
+
+        if (!(request.getData()
+                instanceof WorkoutSession session)) {
+            return Response.failure(
+                    "Zahtev ne sadrži ispravne podatke o treningu."
+            );
+        }
+
+        WorkoutSession savedSession =
+                SESSION_SERVICE.createSession(session);
+
+        return Response.success(
+                "Trening je uspešno evidentiran.",
+                savedSession
+        );
+    }
+
+    private static Response<?> handleUpdateSession(
+            Request<?> request
+    ) throws ValidationException,
+            EntityNotFoundException,
+            SQLException {
+
+        if (!(request.getData()
+                instanceof WorkoutSession session)) {
+            return Response.failure(
+                    "Zahtev ne sadrži ispravne podatke o treningu."
+            );
+        }
+
+        WorkoutSession updatedSession =
+                SESSION_SERVICE.updateSession(session);
+
+        return Response.success(
+                "Trening je uspešno izmenjen.",
+                updatedSession
+        );
+    }
+
+    private static Response<?> handleDeleteSession(
+            Request<?> request
+    ) throws ValidationException,
+            EntityNotFoundException,
+            SQLException {
+
+        if (!(request.getData() instanceof Integer sessionId)) {
+            return Response.failure(
+                    "Zahtev ne sadrži ispravan ID treninga."
+            );
+        }
+
+        SESSION_SERVICE.deleteSession(sessionId);
+
+        return Response.success(
+                "Trening je uspešno obrisan."
+        );
+    }
+
+    private static Response<?> handleGetSessionExercises(
+            Request<?> request
+    ) throws ValidationException, SQLException {
+
+        if (!(request.getData() instanceof Integer sessionId)) {
+            return Response.failure(
+                    "Zahtev ne sadrži ispravan ID treninga."
+            );
+        }
+
+        return Response.success(
+                "Odrađene vežbe su uspešno učitane.",
+                SESSION_EXERCISE_SERVICE
+                        .getExercisesForSession(sessionId)
+        );
+    }
+
+    private static Response<?> handleAddSessionExercise(
+            Request<?> request
+    ) throws ValidationException, SQLException {
+
+        if (!(request.getData()
+                instanceof SessionExercise sessionExercise)) {
+            return Response.failure(
+                    "Zahtev ne sadrži ispravnu odrađenu vežbu."
+            );
+        }
+
+        SessionExercise savedExercise =
+                SESSION_EXERCISE_SERVICE
+                        .createSessionExercise(sessionExercise);
+
+        return Response.success(
+                "Odrađena vežba je uspešno dodata.",
+                savedExercise
+        );
+    }
+
+    private static Response<?> handleUpdateSessionExercise(
+            Request<?> request
+    ) throws ValidationException,
+            EntityNotFoundException,
+            SQLException {
+
+        if (!(request.getData()
+                instanceof SessionExercise sessionExercise)) {
+            return Response.failure(
+                    "Zahtev ne sadrži ispravnu odrađenu vežbu."
+            );
+        }
+
+        SessionExercise updatedExercise =
+                SESSION_EXERCISE_SERVICE
+                        .updateSessionExercise(sessionExercise);
+
+        return Response.success(
+                "Odrađena vežba je uspešno izmenjena.",
+                updatedExercise
+        );
+    }
+
+    private static Response<?> handleRemoveSessionExercise(
+            Request<?> request
+    ) throws ValidationException,
+            EntityNotFoundException,
+            SQLException {
+
+        if (!(request.getData()
+                instanceof Integer sessionExerciseId)) {
+            return Response.failure(
+                    "Zahtev ne sadrži ispravan ID odrađene vežbe."
+            );
+        }
+
+        SESSION_EXERCISE_SERVICE
+                .deleteSessionExercise(sessionExerciseId);
+
+        return Response.success(
+                "Odrađena vežba je uspešno uklonjena."
         );
     }
 

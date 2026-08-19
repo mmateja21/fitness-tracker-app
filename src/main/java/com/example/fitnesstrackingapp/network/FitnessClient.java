@@ -3,6 +3,8 @@ package com.example.fitnesstrackingapp.network;
 import com.example.fitnesstrackingapp.model.Exercise;
 import com.example.fitnesstrackingapp.model.WorkoutPlan;
 import com.example.fitnesstrackingapp.model.PlanExercise;
+import com.example.fitnesstrackingapp.model.SessionExercise;
+import com.example.fitnesstrackingapp.model.WorkoutSession;
 import com.example.fitnesstrackingapp.service.PlanExerciseService;
 
 import java.io.IOException;
@@ -170,6 +172,99 @@ public class FitnessClient {
                 itemId
         ));
     }
+    public Response<?> getAllSessions()
+            throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.GET_ALL_SESSIONS
+                )
+        );
+    }
+
+    public Response<?> createSession(
+            WorkoutSession session
+    ) throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.CREATE_SESSION,
+                        session
+                )
+        );
+    }
+
+    public Response<?> updateSession(
+            WorkoutSession session
+    ) throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.UPDATE_SESSION,
+                        session
+                )
+        );
+    }
+
+    public Response<?> deleteSession(int sessionId)
+            throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.DELETE_SESSION,
+                        sessionId
+                )
+        );
+    }
+
+    public Response<?> getSessionExercises(int sessionId)
+            throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.GET_SESSION_EXERCISES,
+                        sessionId
+                )
+        );
+    }
+
+    public Response<?> addSessionExercise(
+            SessionExercise sessionExercise
+    ) throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.ADD_SESSION_EXERCISE,
+                        sessionExercise
+                )
+        );
+    }
+
+    public Response<?> updateSessionExercise(
+            SessionExercise sessionExercise
+    ) throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.UPDATE_SESSION_EXERCISE,
+                        sessionExercise
+                )
+        );
+    }
+
+    public Response<?> removeSessionExercise(
+            int sessionExerciseId
+    ) throws IOException, ClassNotFoundException {
+
+        return sendRequest(
+                new Request<>(
+                        RequestType.REMOVE_SESSION_EXERCISE,
+                        sessionExerciseId
+                )
+        );
+    }
+
+
 
     //Šalje zahtev serveru i vraća primljeni odgovor.
 

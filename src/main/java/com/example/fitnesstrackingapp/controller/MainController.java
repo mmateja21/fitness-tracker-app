@@ -42,6 +42,18 @@ public class MainController {
     private void showPlans() {
         loadView("plan-view.fxml");
     }
+    /**
+     * Prikazuje ekran za evidentiranje novog treninga.
+     */
+    @FXML
+    private void showNewWorkout() {
+        loadView("new-workout-view.fxml");
+    }
+
+    @FXML
+    private void showSessions() {
+        loadView("session-view.fxml");
+    }
 
     /**
      * Učitava FXML ekran u centralni deo aplikacije.

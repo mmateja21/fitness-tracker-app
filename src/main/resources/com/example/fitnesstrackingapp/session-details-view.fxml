@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="600.0"
+            prefWidth="950.0"
+            stylesheets="@styles.css"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.fitnesstrackingapp.controller.SessionDetailsController">
+
+    <top>
+        <VBox spacing="5.0"
+              styleClass="header-panel">
+
+            <padding>
+                <Insets bottom="15.0"
+                        left="20.0"
+                        right="20.0"
+                        top="20.0"/>
+            </padding>
+
+            <Label text="Odrađene vežbe"
+                   styleClass="page-title"/>
+
+            <Label fx:id="sessionLabel"
+                   text="Izabrani trening"
+                   styleClass="page-subtitle"/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="12.0">
+
+            <TableView fx:id="sessionExerciseTable"
+                       VBox.vgrow="ALWAYS">
+
+                <columns>
+                    <TableColumn fx:id="exerciseNameColumn"
+                                 prefWidth="220.0"
+                                 text="Vežba"/>
+
+                    <TableColumn fx:id="setsColumn"
+                                 prefWidth="90.0"
+                                 text="Serije"/>
+
+                    <TableColumn fx:id="repsColumn"
+                                 prefWidth="110.0"
+                                 text="Ponavljanja"/>
+
+                    <TableColumn fx:id="weightColumn"
+                                 prefWidth="110.0"
+                                 text="Težina (kg)"/>
+
+                    <TableColumn fx:id="volumeColumn"
+                                 prefWidth="130.0"
+                                 text="Volumen (kg)"/>
+                </columns>
+            </TableView>
+
+            <Label fx:id="totalVolumeLabel"
+                   text="Ukupan volumen: 0.00 kg"
+                   styleClass="section-title"/>
+
+            <padding>
+                <Insets bottom="15.0"
+                        left="20.0"
+                        right="15.0"
+                        top="15.0"/>
+            </padding>
+        </VBox>
+    </center>
+
+    <right>
+        <VBox prefWidth="290.0"
+              spacing="15.0"
+              styleClass="form-panel">
+
+            <padding>
+                <Insets bottom="20.0"
+                        left="15.0"
+                        right="20.0"
+                        top="15.0"/>
+            </padding>
+
+            <Label text="Rezultat vežbe"
+                   styleClass="section-title"/>
+
+            <GridPane hgap="10.0"
+                      vgap="12.0">
+
+                <Label text="Vežba:"
+                       styleClass="form-label"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="0"/>
+
+                <ComboBox fx:id="exerciseComboBox"
+                          prefWidth="170.0"
+                          GridPane.columnIndex="1"
+                          GridPane.rowIndex="0"/>
+
+                <Label text="Serije:"
+                       styleClass="form-label"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="1"/>
+
+                <TextField fx:id="setsField"
+                           promptText="Npr. 4"
+                           GridPane.columnIndex="1"
+                           GridPane.rowIndex="1"/>
+
+                <Label text="Ponavljanja:"
+                       styleClass="form-label"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="2"/>
+
+                <TextField fx:id="repsField"
+                           promptText="Npr. 8"
+                           GridPane.columnIndex="1"
+                           GridPane.rowIndex="2"/>
+
+                <Label text="Težina:"
+                       styleClass="form-label"
+                       GridPane.columnIndex="0"
+                       GridPane.rowIndex="3"/>
+
+                <TextField fx:id="weightField"
+                           promptText="Npr. 70"
+                           GridPane.columnIndex="1"
+                           GridPane.rowIndex="3"/>
+            </GridPane>
+            <HBox spacing="10.0">
+                <Button text="Dodaj"
+                        styleClass="primary-button"
+                        onAction="#handleAdd"/>
+
+                <Button text="Izmeni"
+                        styleClass="secondary-button"
+                        onAction="#handleUpdate"/>
+            </HBox>
+
+            <HBox spacing="10.0">
+                <Button text="Ukloni"
+                        styleClass="danger-button"
+                        onAction="#handleRemove"/>
+
+                <Button text="Očisti"
+                        styleClass="secondary-button"
+                        onAction="#handleClear"/>
+            </HBox>
+
+
+
+            <Label fx:id="statusLabel"
+                   text=""
+                   wrapText="true"/>
+        </VBox>
+    </right>
+
+</BorderPane>
